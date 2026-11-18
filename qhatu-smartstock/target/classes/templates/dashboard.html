@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Dashboard')}"></head>
+<body>
+<div class="layout">
+    <aside th:replace="~{layout :: sidebar}"></aside>
+
+    <main class="main">
+        <div class="topbar">
+            <div>
+                <h1>Dashboard</h1>
+                <p class="subtitle">Resumen operativo de QHATU SmartStock</p>
+            </div>
+            <a th:href="@{/ventas}" class="btn btn-primary">+ Nueva venta</a>
+        </div>
+
+        <!-- STATS -->
+        <div class="stats-grid">
+            <div class="stat-card blue">
+                <div class="label">Productos registrados</div>
+                <div class="value" th:text="${totalProductos}">0</div>
+                <div class="hint">En el catálogo</div>
+            </div>
+            <div class="stat-card green">
+                <div class="label">Ventas de hoy</div>
+                <div class="value" th:text="${totalVentasHoy}">0</div>
+                <div class="hint">Operaciones registradas</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Ingresos del día</div>
+                <div class="value" th:text="'S/ ' + ${#numbers.formatDecimal(ingresosHoy, 1, 2)}">S/ 0.00</div>
+                <div class="hint">Total facturado hoy</div>
+            </div>
+            <div class="stat-card red">
+                <div class="label">Stock crítico</div>
+                <div class="value" th:text="${totalCriticos}">0</div>
+                <div class="hint">Productos por reponer</div>
+            </div>
+        </div>
+
+        <!-- ALERTA -->
+        <div class="alert alert-warning" th:if="${totalCriticos > 0}">
+            ⚠️ Tienes <strong th:text="${totalCriticos}">0</strong>
+            producto(s) con stock igual o por debajo del mínimo. Revisa la sección de reposición.
+        </div>
+
+        <!-- STOCK CRÍTICO -->
+        <div class="panel">
+            <div class="panel-header">
+                <h2>🚨 Productos en stock crítico</h2>
+                <span class="count" th:text="${totalCriticos} + ' producto(s)'">0</span>
+            </div>
+            <table th:if="${!#lists.isEmpty(stockCritico)}">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Categoría</th>
+                        <th class="right">Stock actual</th>
+                        <th class="right">Mínimo</th>
+                        <th class="center">Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="p : ${stockCritico}">
+                        <td><strong th:text="${p.nombre}">-</strong></td>
+                        <td th:text="${p.categoria}">-</td>
+                        <td class="right" th:text="${p.stock}">0</td>
+                        <td class="right" th:text="${p.stockMinimo}">0</td>
+                        <td class="center">
+                            <span class="badge red" th:if="${p.stock == 0}">Sin stock</span>
+                            <span class="badge yellow" th:if="${p.stock > 0}">Bajo</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div th:if="${#lists.isEmpty(stockCritico)}" class="alert alert-success">
+                ✅ Todos los productos tienen stock suficiente.
+            </div>
+        </div>
+
+        <!-- VENTAS DE HOY -->
+        <div class="panel">
+            <div class="panel-header">
+                <h2>🧾 Ventas recientes (hoy)</h2>
+                <a th:href="@{/ventas}" class="btn btn-secondary btn-sm">Ver todas</a>
+            </div>
+            <table th:if="${!#lists.isEmpty(ventasHoy)}">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Fecha y hora</th>
+            <th class="right">Total</th>
+            <th class="center">Comprobante</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="v : ${ventasHoy}">
+            <td th:text="'#' + ${v.id}">-</td>
+            <td th:text="${#temporals.format(v.fecha, 'dd/MM/yyyy HH:mm')}">-</td>
+            <td class="right subtotal"
+                th:text="'S/ ' + ${#numbers.formatDecimal(v.total, 1, 2)}">-</td>
+            <td class="center">
+                <a th:href="@{/ventas/comprobante/{id}(id=${v.id})}"
+                   class="btn btn-secondary btn-sm">🧾 Ver</a>
+            </td>
+        </tr>
+    </tbody>
+</table>
+            <div th:if="${#lists.isEmpty(ventasHoy)}" class="alert alert-info">
+                📭 No se han registrado ventas hoy. Ve a la sección <strong>Ventas</strong> para registrar la primera.
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

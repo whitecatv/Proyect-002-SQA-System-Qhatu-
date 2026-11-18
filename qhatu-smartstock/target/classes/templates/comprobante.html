@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Comprobante')}"></head>
+<body>
+<div class="layout">
+    <aside th:replace="~{layout :: sidebar}"></aside>
+
+    <main class="main">
+        <div class="topbar">
+            <div>
+                <h1>Comprobante de pago</h1>
+                <p class="subtitle">
+                    Venta #<span th:text="${venta.id}">0</span>
+                </p>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="window.print()" class="btn btn-primary">🖨️ Imprimir</button>
+                <a th:href="@{/ventas}" class="btn btn-secondary">← Volver</a>
+            </div>
+        </div>
+
+        <div class="receipt-wrapper">
+            <div class="receipt">
+                <!-- CABECERA -->
+                <div class="receipt-header">
+                    <div class="receipt-brand">QHATU</div>
+                    <div class="receipt-subtitle">SMARTSTOCK</div>
+                    <div class="receipt-info">
+                        RUC: 20123456789<br/>
+                        Av. Principal 123, Lima - Perú<br/>
+                        Tel: (01) 555-1234
+                    </div>
+                </div>
+
+                <div class="receipt-divider"></div>
+
+                <!-- META -->
+                <div class="receipt-meta">
+                    <div>
+                        <span>Comprobante:</span>
+                        <strong th:text="'#V-' + ${#numbers.formatInteger(venta.id, 6, 'POINT')}">#V-000000</strong>
+                    </div>
+                    <div>
+                        <span>Fecha:</span>
+                        <strong th:text="${#temporals.format(venta.fecha, 'dd/MM/yyyy HH:mm')}">--/--/----</strong>
+                    </div>
+                    <div>
+                        <span>Cajero:</span>
+                        <strong>admin</strong>
+                    </div>
+                </div>
+
+                <div class="receipt-divider"></div>
+
+                <!-- DETALLE -->
+                <table class="receipt-table">
+                    <thead>
+                        <tr>
+                            <th class="center">Cant</th>
+                            <th>Descripción</th>
+                            <th class="right">P.Unit</th>
+                            <th class="right">Subt.</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="d : ${venta.detalles}">
+                            <td class="center" th:text="${d.cantidad}">0</td>
+                            <td th:text="${d.producto.nombre}">-</td>
+                            <td class="right"
+                                th:text="${#numbers.formatDecimal(d.subtotal / d.cantidad, 1, 2)}">0.00</td>
+                            <td class="right"
+                                th:text="${#numbers.formatDecimal(d.subtotal, 1, 2)}">0.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="receipt-divider"></div>
+
+                <!-- TOTAL -->
+                <div class="receipt-total">
+                    <span>TOTAL</span>
+                    <span th:text="'S/ ' + ${#numbers.formatDecimal(venta.total, 1, 2)}">S/ 0.00</span>
+                </div>
+
+                <div class="receipt-divider"></div>
+
+                <!-- FOOTER -->
+                <div class="receipt-footer">
+                    ¡Gracias por su compra!<br/>
+                    <small>Este documento es un comprobante interno.</small>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

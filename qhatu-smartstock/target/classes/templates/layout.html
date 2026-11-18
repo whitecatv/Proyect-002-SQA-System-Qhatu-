@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title th:text="${title} + ' | QHATU SmartStock'">QHATU SmartStock</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<aside th:fragment="sidebar" class="sidebar">
+    <div class="brand">QHATU<small>SMARTSTOCK</small></div>
+    <a th:href="@{/dashboard}" th:classappend="${active == 'dashboard'} ? 'active'">
+        <span>📊</span> <span>Dashboard</span>
+    </a>
+    <a th:href="@{/productos}" th:classappend="${active == 'productos'} ? 'active'">
+        <span>📦</span> <span>Productos</span>
+    </a>
+    <a th:href="@{/ventas}" th:classappend="${active == 'ventas'} ? 'active'">
+        <span>🛒</span> <span>Ventas</span>
+    </a>
+    <div class="divider"></div>
+    <a th:href="@{/logout}"><span>🚪</span> <span>Cerrar sesión</span></a>
+    <div class="user-info">
+        Sesión: <strong>admin</strong><br/>
+        Rol: ADMIN
+    </div>
+</aside>
+</body>
+</html>

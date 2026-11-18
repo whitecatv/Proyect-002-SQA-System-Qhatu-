@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Ventas')}"></head>
+<body>
+<div class="layout">
+    <aside th:replace="~{layout :: sidebar}"></aside>
+
+    <main class="main">
+        <div class="topbar">
+            <div>
+                <h1>Registrar venta</h1>
+                <p class="subtitle">Selecciona cantidades y confirma la operación</p>
+            </div>
+        </div>
+
+        <div class="pos-grid">
+            <form th:action="@{/ventas/registrar}" method="post" class="panel">
+                <div class="panel-header">
+                    <h2>🛍️ Productos disponibles</h2>
+                    <span class="count" th:text="${#lists.size(productos)} + ' productos'">0</span>
+                </div>
+
+                <table th:if="${!#lists.isEmpty(productos)}">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Categoría</th>
+                            <th class="right">Precio</th>
+                            <th class="right">Stock</th>
+                            <th class="center">Cantidad</th>
+                            <th class="right">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="p : ${productos}">
+                            <td><strong th:text="${p.nombre}">-</strong></td>
+                            <td><span class="badge gray" th:text="${p.categoria}">-</span></td>
+                            <td class="right"
+                                th:text="'S/ ' + ${#numbers.formatDecimal(p.precio, 1, 2)}">-</td>
+                            <td class="right">
+                                <span class="badge"
+                                      th:classappend="${p.stock == 0 ? 'red' : (p.stock <= p.stockMinimo ? 'yellow' : 'green')}"
+                                      th:text="${p.stock}">0</span>
+                            </td>
+                            <td class="center">
+                                <input type="number"
+                                       class="qty-input"
+                                       th:name="|cant_${p.id}|"
+                                       th:data-price="${p.precio}"
+                                       th:data-id="${p.id}"
+                                       th:attr="max=${p.stock}"
+                                       value="0" min="0"/>
+                            </td>
+                            <td class="right">
+                                <span class="subtotal" th:id="|subtotal_${p.id}|">S/ 0.00</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div th:if="${#lists.isEmpty(productos)}" class="alert alert-info">
+                    📭 No hay productos para vender. Registra productos primero.
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary btn-block"
+                            th:disabled="${#lists.isEmpty(productos)}">
+                        ✅ Confirmar venta
+                    </button>
+                </div>
+            </form>
+
+            <div class="panel cart-summary">
+                <div class="panel-header">
+                    <h2>🧾 Resumen</h2>
+                </div>
+                <div class="cart-total" id="cartTotal">S/ 0.00</div>
+                <p class="text-muted" style="font-size:13px; text-align:right; margin-bottom:16px;">
+                    Total a pagar
+                </p>
+                <div class="alert alert-info" style="font-size:12px;">
+                    Ingresa cantidades &gt; 0 para calcular el total. La venta descuenta stock automáticamente.
+                </div>
+            </div>
+        </div>
+
+        <!-- VENTAS DEL DÍA -->
+        <div class="panel">
+            <div class="panel-header">
+                <h2>📅 Ventas de hoy</h2>
+                <span class="count" th:text="${#lists.size(ventasHoy)} + ' venta(s)'">0</span>
+            </div>
+            <table th:if="${!#lists.isEmpty(ventasHoy)}">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Fecha y hora</th>
+                        <th class="right">Total</th>
+                        <th class="center">Comprobante</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="v : ${ventasHoy}">
+                        <td th:text="'#' + ${v.id}">-</td>
+                        <td th:text="${#temporals.format(v.fecha, 'dd/MM/yyyy HH:mm')}">-</td>
+                        <td class="right subtotal"
+                            th:text="'S/ ' + ${#numbers.formatDecimal(v.total, 1, 2)}">-</td>
+                        <td class="center">
+                            <a th:href="@{/ventas/comprobante/{id}(id=${v.id})}"
+                               class="btn btn-secondary btn-sm">🧾 Ver</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div th:if="${#lists.isEmpty(ventasHoy)}" class="alert alert-info">
+                📭 Aún no hay ventas registradas hoy.
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    document.querySelectorAll('.qty-input').forEach(input => {
+        input.addEventListener('input', recalcular);
+    });
+
+    function recalcular() {
+        let total = 0;
+        document.querySelectorAll('.qty-input').forEach(input => {
+            const qty   = parseInt(input.value) || 0;
+            const price = parseFloat(input.dataset.price) || 0;
+            const id    = input.dataset.id;
+            const sub   = qty * price;
+            total += sub;
+            const cell = document.getElementById('subtotal_' + id);
+            if (cell) cell.textContent = 'S/ ' + sub.toFixed(2);
+        });
+        document.getElementById('cartTotal').textContent = 'S/ ' + total.toFixed(2);
+    }
+</script>
+</body>
+</html>

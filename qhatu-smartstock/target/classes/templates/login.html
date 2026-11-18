@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Iniciar sesión')}"></head>
+<body>
+<div class="login-page">
+    <div class="login-card">
+        <div class="brand-icon">🏪</div>
+        <h1>QHATU SmartStock</h1>
+        <p class="subtitle">Gestión inteligente de inventario y ventas</p>
+
+        <div class="login-error" th:if="${param.error}">
+            Usuario o contraseña incorrectos. Inténtalo de nuevo.
+        </div>
+        <div class="login-error" style="background:#d1fae5;color:#065f46;border-color:#10b981"
+             th:if="${param.logout}">
+            Sesión cerrada correctamente.
+        </div>
+
+        <form th:action="@{/login}" method="post">
+            <div class="form-group">
+                <label>Usuario</label>
+                <input type="text" name="username" required autofocus placeholder="admin"/>
+            </div>
+            <div class="form-group">
+                <label>Contraseña</label>
+                <input type="password" name="password" required placeholder="••••••"/>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Ingresar al sistema</button>
+        </form>
+
+        <div class="login-demo">
+            <strong>🔑 Credenciales de demostración</strong>
+            Usuario: <code>admin</code> — Contraseña: <code>admin123</code>
+        </div>
+    </div>
+</div>
+</body>
+</html>

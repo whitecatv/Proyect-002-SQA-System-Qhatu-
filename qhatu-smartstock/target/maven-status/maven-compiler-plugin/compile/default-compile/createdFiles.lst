@@ -1,0 +1,17 @@
+com\qhatu\smartstock\service\ProductoService.class
+com\qhatu\smartstock\service\VentaService.class
+com\qhatu\smartstock\entity\Producto.class
+com\qhatu\smartstock\service\UsuarioService.class
+com\qhatu\smartstock\controller\VentaController.class
+com\qhatu\smartstock\repository\VentaRepository.class
+com\qhatu\smartstock\entity\Usuario.class
+com\qhatu\smartstock\repository\ProductoRepository.class
+com\qhatu\smartstock\repository\DetalleVentaRepository.class
+com\qhatu\smartstock\repository\UsuarioRepository.class
+com\qhatu\smartstock\config\SecurityConfig.class
+com\qhatu\smartstock\controller\DashboardController.class
+com\qhatu\smartstock\controller\AuthController.class
+com\qhatu\smartstock\entity\DetalleVenta.class
+com\qhatu\smartstock\controller\ProductoController.class
+com\qhatu\smartstock\entity\Venta.class
+com\qhatu\smartstock\SmartStockApplication.class
