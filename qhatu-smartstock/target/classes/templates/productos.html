@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Productos')}"></head>
+<body>
+<div class="layout">
+    <aside th:replace="~{layout :: sidebar}"></aside>
+
+    <main class="main">
+        <div class="topbar">
+            <div>
+                <h1>Productos</h1>
+                <p class="subtitle">Catálogo de productos del minimarket</p>
+            </div>
+            <a th:href="@{/productos/nuevo}" class="btn btn-primary">+ Nuevo producto</a>
+        </div>
+
+        <!-- FLASH MESSAGES -->
+        <div class="alert alert-success" th:if="${success}" th:text="${success}"></div>
+        <div class="alert alert-danger"  th:if="${error}"   th:text="${error}"></div>
+
+        <div class="panel">
+            <div class="panel-header">
+                <h2>📦 Catálogo</h2>
+                <span class="count" th:text="${#lists.size(productos)} + ' producto(s)'">0</span>
+            </div>
+
+            <table th:if="${!#lists.isEmpty(productos)}">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Categoría</th>
+                        <th class="right">Precio (S/)</th>
+                        <th class="right">Stock</th>
+                        <th class="right">Mínimo</th>
+                        <th class="center">Estado</th>
+                        <th class="center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="p : ${productos}">
+                        <td th:text="${p.id}">-</td>
+                        <td><strong th:text="${p.nombre}">-</strong></td>
+                        <td><span class="badge gray" th:text="${p.categoria}">-</span></td>
+                        <td class="right" th:text="${#numbers.formatDecimal(p.precio, 1, 2)}">-</td>
+                        <td class="right" th:text="${p.stock}">0</td>
+                        <td class="right" th:text="${p.stockMinimo}">0</td>
+                        <td class="center">
+                            <span class="badge red"    th:if="${p.stock == 0}">Sin stock</span>
+                            <span class="badge yellow" th:if="${p.stock > 0 and p.stock <= p.stockMinimo}">Bajo</span>
+                            <span class="badge green"  th:if="${p.stock > p.stockMinimo}">OK</span>
+                        </td>
+                        <td class="center">
+                            <a th:href="@{/productos/editar/{id}(id=${p.id})}"
+                               class="btn btn-secondary btn-sm">Editar</a>
+                            <form th:action="@{/productos/eliminar/{id}(id=${p.id})}"
+                                  method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-danger btn-sm"
+                                        onclick="return confirm('¿Eliminar este producto?');">
+                                    Eliminar
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div th:if="${#lists.isEmpty(productos)}" class="alert alert-info">
+                📭 No hay productos registrados. Haz clic en <strong>Nuevo producto</strong> para comenzar.
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>
